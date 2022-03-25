@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 )
 
 const apiKey = ""
@@ -20,5 +20,7 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(response)
+	// fmt.Println(response)
+
+	log.Println(response)
 }

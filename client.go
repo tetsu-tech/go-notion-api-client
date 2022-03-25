@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -78,15 +79,18 @@ func (c *Client) GetMe(ctx context.Context) (*GetMeResponse, error) {
 		return nil, err
 	}
 
-	req.Header.Set("Authorization: Bearer %s", c.Token)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
+	req.Header.Set("Notion-Version", "2021-08-16")
 	req = req.WithContext(ctx)
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
+
 		return nil, err
 	}
 
 	defer res.Body.Close()
+
 	switch res.StatusCode {
 	case http.StatusOK:
 		bodyBytes, err := ioutil.ReadAll(res.Body)
