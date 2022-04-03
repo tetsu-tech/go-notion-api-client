@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 )
 
-const apiKey = ""
-
 func main() {
-	notion, err := NewClient("https://api.notion.com/v1", apiKey, nil)
+	accessToken := os.Getenv("GO_NOTION_ACCESS_TOKEN")
+	notion, err := NewClient("https://api.notion.com/v1", accessToken, nil)
 
 	if err != nil {
 		panic(err)
