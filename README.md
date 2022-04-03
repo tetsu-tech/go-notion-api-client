@@ -1,8 +1,11 @@
 # go-notion-api-client
 
 ## 環境構築
-環境変数 `GO_NOTION_ACCESS_TOKEN` に、Notionのアクセストークンを設定する。
-
+以下を実行する。
+```
+go mod tidy
+```
+また、.envに `GO_NOTION_ACCESS_TOKEN` の値を記入する。
 ## 実行
 以下のいずれかのコマンドを実行する。
 ```
