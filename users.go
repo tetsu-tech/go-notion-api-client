@@ -70,6 +70,6 @@ func (c *Client) GetMe(ctx context.Context) (*GetMeResponse, error) {
 
 		return getMeResponse, nil
 	default:
-		return nil, errors.New("Unexpected error")
+		return nil, errors.New("unexpected error")
 	}
 }
