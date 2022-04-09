@@ -9,11 +9,12 @@ go mod tidy
 ## 実行
 以下のいずれかのコマンドを実行する。
 ```
-go run main.go client.go
+# xxxには実行したいファイル名を入れる
+make go_run-xxx.go
 ```
 or
 ```
-go build && ./go-notion-api-client
+make go_build
 ```
 ## 構成
 - ディレクトリは分けず、main.goやgo.modと同じ階層に各機能ごとのファイルを作成していく
