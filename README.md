@@ -1,5 +1,20 @@
 # go-notion-api-client
 
+## 環境構築
+以下を実行する。
+```
+go mod tidy
+```
+また、.envに `GO_NOTION_ACCESS_TOKEN` の値を記入する。
+## 実行
+以下のいずれかのコマンドを実行する。
+```
+go run main.go client.go
+```
+or
+```
+go build && ./go-notion-api-client
+```
 ## 構成
 - ディレクトリは分けず、main.goやgo.modと同じ階層に各機能ごとのファイルを作成していく
 - ファイル名はsnake caseが一般的
