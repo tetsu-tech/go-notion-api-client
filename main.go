@@ -25,13 +25,12 @@ func main() {
 		panic(err)
 	}
 
-	response, err := notion.GetMe(context.Background())
+	// response, err := notion.GetMe(context.Background())
+	response, err := notion.GetRetrievePage(context.Background(), "185fdb9143bd42ab9dedca84f171afaf")
 
 	if err != nil {
 		panic(err)
 	}
-
-	// fmt.Println(response)
 
 	log.Println(response)
 }
