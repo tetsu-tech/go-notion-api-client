@@ -1,4 +1,4 @@
-package main
+package notion
 
 import (
 	"context"
@@ -26,7 +26,7 @@ func TestGetMe(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://api.notion.com/v1/users/me",
 		httpmock.NewBytesResponder(200, resBytes),
 	)
-	
+
 	client, err := NewClient("https://api.notion.com/v1", "token", nil)
 
 	if err != nil {

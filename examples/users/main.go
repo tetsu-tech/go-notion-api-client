@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+
+	"github.com/tetsu-tech/go-notion-api-client"
 )
 
 func loadEnv() {
@@ -16,22 +18,22 @@ func loadEnv() {
 }
 
 func main() {
+
 	loadEnv()
 
 	accessToken := os.Getenv("GO_NOTION_ACCESS_TOKEN")
-	notion, err := NewClient("https://api.notion.com/v1", accessToken, nil)
+	client, err := notion.NewClient("https://api.notion.com/v1", accessToken, nil)
 
 	if err != nil {
 		panic(err)
 	}
 
-	response, err := notion.GetMe(context.Background())
+	response, err := client.GetMe(context.Background())
 
 	if err != nil {
 		panic(err)
 	}
-
-	// fmt.Println(response)
 
 	log.Println(response)
+
 }
