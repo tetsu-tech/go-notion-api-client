@@ -65,7 +65,6 @@ func TestRetrieveUser(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(res)
 
 	t.Run("Retrieve a user endpoint", func(t *testing.T) {
 		assert.Nil(t, err)
