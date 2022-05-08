@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"path"
@@ -34,23 +34,13 @@ type GetMeResponse struct {
 }
 
 func (c *Client) GetMe(ctx context.Context) (*GetMeResponse, error) {
-	reqURL := *c.URL
-
-	reqURL.Path = path.Join(reqURL.Path, "users", "me")
-
-	req, err := http.NewRequest(http.MethodGet, reqURL.String(), nil)
-
+	req, err := c.ConstructReq(ctx, "users/me")
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
-	req.Header.Set("Notion-Version", "2021-08-16")
-	req = req.WithContext(ctx)
-
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
-
 		return nil, err
 	}
 
@@ -69,6 +59,31 @@ func (c *Client) GetMe(ctx context.Context) (*GetMeResponse, error) {
 		}
 
 		return getMeResponse, nil
+	default:
+		return nil, errors.New("unexpected error")
+	}
+}
+
+func (c *Client) RetrieveUser(ctx context.Context, userId string) (res any, err error) {
+	url := path.Join("users", userId)
+	req, err := c.ConstructReq(ctx, url)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+
+	switch response.StatusCode {
+	case http.StatusOK:
+		var r io.Reader = response.Body
+		json.NewDecoder(r).Decode(&res)
+
+		return res, nil
 	default:
 		return nil, errors.New("unexpected error")
 	}

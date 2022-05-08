@@ -22,7 +22,7 @@ func main() {
 	loadEnv()
 
 	accessToken := os.Getenv("GO_NOTION_ACCESS_TOKEN")
-	client, err := notion.NewClient("https://api.notion.com/v1", accessToken, nil)
+	client, err := notion.NewClient(accessToken, nil)
 
 	if err != nil {
 		panic(err)
