@@ -1,11 +1,14 @@
 package notion
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 )
 
 type Client struct {
@@ -17,8 +20,8 @@ type Client struct {
 	Logger *log.Logger
 }
 
-func NewClient(urlStr, token string, logger *log.Logger) (*Client, error) {
-	baseURI, err := url.ParseRequestURI(urlStr)
+func NewClient(token string, logger *log.Logger) (*Client, error) {
+	baseURI, err := url.ParseRequestURI("https://api.notion.com/v1")
 
 	if err != nil {
 		return nil, err
@@ -38,4 +41,19 @@ func NewClient(urlStr, token string, logger *log.Logger) (*Client, error) {
 		Token:      token,
 		Logger:     logger,
 	}, nil
+}
+
+func (c *Client) ConstructReq(ctx context.Context, url string) (*http.Request, error) {
+	reqURL := *c.URL
+	reqURL.Path = path.Join(reqURL.Path, url)
+
+	req, err := http.NewRequest(http.MethodGet, reqURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
+	req.Header.Set("Notion-Version", "2022-02-22")
+	req = req.WithContext(ctx)
+	return req, nil
 }
