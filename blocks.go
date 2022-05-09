@@ -9,20 +9,20 @@ import (
 	"log"
 	"net/http"
 	"path"
-	"time"
 )
 
+// TODO: Todo, Paragraph, HeadingなどのいずれかをBlockに持ちたい
 type Block struct {
-	Object         string    `json:"object"`
-	ID             string    `json:"id"`
-	CreatedTime    time.Time `json:"created_time"`
-	CreatedBy      TimeStamp `json:"created_by"`
-	LastEditedTime time.Time `json:"last_edited_time"`
-	LastEditedBy   TimeStamp `json:"last_edited_by"`
-	HasChildren    bool      `json:"has_children"`
-	Type           string    `json:"type"`
-	Archived       bool      `json:"archived"`
-	ToDo           ToDo      `json:"to_do"`
+	Object         string `json:"object"`
+	ID             string `json:"id"`
+	CreatedTime    string `json:"created_time"`
+	CreatedBy      User   `json:"created_by"`
+	LastEditedTime string `json:"last_edited_time"`
+	LastEditedBy   User   `json:"last_edited_by"`
+	HasChildren    bool   `json:"has_children"`
+	Type           string `json:"type"`
+	Archived       bool   `json:"archived"`
+	ToDo           ToDo   `json:"to_do"`
 }
 
 type ToDo struct {
@@ -31,7 +31,7 @@ type ToDo struct {
 	Color    string   `json:"color"`
 }
 
-type TimeStamp struct {
+type User struct {
 	Object string `json:"object"`
 	ID     string `json:"id"`
 }
@@ -63,7 +63,9 @@ func (c *Client) RetrieveBlock(ctx context.Context, blockID string) (*Block, err
 
 	reqURL.Path = path.Join(reqURL.Path, "blocks", blockID)
 
-	req, err := http.NewRequest(http.MethodGet, reqURL.String(), nil)
+	url := path.Join("blocks", blockID)
+
+	req, err := c.ConstructReq(ctx, url, http.MethodGet)
 
 	if err != nil {
 		return nil, err

@@ -34,7 +34,7 @@ type GetMeResponse struct {
 }
 
 func (c *Client) GetMe(ctx context.Context) (*GetMeResponse, error) {
-	req, err := c.ConstructReq(ctx, "users/me")
+	req, err := c.ConstructReq(ctx, "users/me", http.MethodGet)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (c *Client) GetMe(ctx context.Context) (*GetMeResponse, error) {
 
 func (c *Client) RetrieveUser(ctx context.Context, userId string) (res any, err error) {
 	url := path.Join("users", userId)
-	req, err := c.ConstructReq(ctx, url)
+	req, err := c.ConstructReq(ctx, url, http.MethodGet)
 	if err != nil {
 		return nil, err
 	}

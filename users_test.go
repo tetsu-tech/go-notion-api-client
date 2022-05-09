@@ -12,11 +12,11 @@ import (
 )
 
 func TestGetMe(t *testing.T) {
-	const resJson = `{"object":"user","id":"721363f4-bc34-4700-85de-c4cca6c423ad","name":"go-notion-api-client","avatar_url":null,"type":"bot","bot":{"owner":{"type":"workspace","workspace":true}}}`
-	resBytes := []byte(resJson)
+	const expectedJson = `{"object":"user","id":"721363f4-bc34-4700-85de-c4cca6c423ad","name":"go-notion-api-client","avatar_url":null,"type":"bot","bot":{"owner":{"type":"workspace","workspace":true}}}`
+	expectedBytes := []byte(expectedJson)
 	var actual *GetMeResponse
 
-	err := json.Unmarshal(resBytes, &actual)
+	err := json.Unmarshal(expectedBytes, &actual)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -25,7 +25,7 @@ func TestGetMe(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 	httpmock.RegisterResponder("GET", "https://api.notion.com/v1/users/me",
-		httpmock.NewBytesResponder(200, resBytes),
+		httpmock.NewBytesResponder(200, expectedBytes),
 	)
 
 	client, err := NewClient("token", nil)
@@ -46,14 +46,14 @@ func TestGetMe(t *testing.T) {
 
 func TestRetrieveUser(t *testing.T) {
 	const userId = "9a26468a-dad1-498a-becb-3eb19be24f0b"
-	const resJson = `{"object":"user","id":"` + userId + `","name":"小池智哉","avatar_url":"https://s3-us-west-2.amazonaws.com/public.notion-static.com/a402c784-af23-43fb-b572-09a9d7533f59/IMG_1984_(1).jpg","type":"person","person":{"email":"tommy@p.u-tokyo.ac.jp"}}`
-	resBytes := []byte(resJson)
+	const expectedJson = `{"object":"user","id":"` + userId + `","name":"小池智哉","avatar_url":"https://s3-us-west-2.amazonaws.com/public.notion-static.com/a402c784-af23-43fb-b572-09a9d7533f59/IMG_1984_(1).jpg","type":"person","person":{"email":"tommy@p.u-tokyo.ac.jp"}}`
+	expectedBytes := []byte(expectedJson)
 	resMap := map[string]interface{}(map[string]interface{}{"avatar_url": "https://s3-us-west-2.amazonaws.com/public.notion-static.com/a402c784-af23-43fb-b572-09a9d7533f59/IMG_1984_(1).jpg", "id": userId, "name": "小池智哉", "object": "user", "person": map[string]interface{}{"email": "tommy@p.u-tokyo.ac.jp"}, "type": "person"})
 
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 	httpmock.RegisterResponder("GET", "https://api.notion.com/v1/users/"+userId,
-		httpmock.NewBytesResponder(200, resBytes),
+		httpmock.NewBytesResponder(200, expectedBytes),
 	)
 
 	client, err := NewClient("token", nil)

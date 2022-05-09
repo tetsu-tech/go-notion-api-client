@@ -43,11 +43,11 @@ func NewClient(token string, logger *log.Logger) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) ConstructReq(ctx context.Context, url string) (*http.Request, error) {
+func (c *Client) ConstructReq(ctx context.Context, url string, method string) (*http.Request, error) {
 	reqURL := *c.URL
 	reqURL.Path = path.Join(reqURL.Path, url)
 
-	req, err := http.NewRequest(http.MethodGet, reqURL.String(), nil)
+	req, err := http.NewRequest(method, reqURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
