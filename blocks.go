@@ -11,7 +11,6 @@ import (
 	"path"
 )
 
-// TODO: Todo, Paragraph, HeadingなどのいずれかをBlockに持ちたい
 type Block struct {
 	Object         string `json:"object"`
 	ID             string `json:"id"`
@@ -25,10 +24,166 @@ type Block struct {
 	ToDo           ToDo   `json:"to_do"`
 }
 
-type ToDo struct {
+// block type: https://developers.notion.com/reference/block
+
+type Paragraph struct {
+	RichText RichText    `json:"rich_text"`
+	Color    string      `json:"color"`
+	Children interface{} `json:"children"`
+}
+
+type Heading struct {
 	RichText RichText `json:"rich_text"`
-	Checked  bool     `json:"checked"`
 	Color    string   `json:"color"`
+}
+
+type HeadingOne struct {
+	Heading
+}
+
+type HeadingTwo struct {
+	Heading
+}
+
+type HeadingThree struct {
+	Heading
+}
+
+type Callout struct {
+	RichText RichText    `json:"rich_text"`
+	Icon     string      `json:"icon"`
+	Color    string      `json:"color"`
+	Children interface{} `json:"children"`
+}
+
+type Quote struct {
+	RichText RichText `json:"rich_text"`
+	Color    string   `json:"color"`
+}
+
+type BulletedListItem struct {
+	RichText RichText    `json:"rich_text"`
+	Color    string      `json:"color"`
+	Children interface{} `json:"children"`
+}
+
+type NumberedListItem struct {
+	RichText RichText    `json:"rich_text"`
+	Color    string      `json:"color"`
+	Children interface{} `json:"children"`
+}
+
+type ToDo struct {
+	RichText RichText    `json:"rich_text"`
+	Checked  bool        `json:"checked"`
+	Color    string      `json:"color"`
+	Children interface{} `json:"children"`
+}
+
+type Toggle struct {
+	RichText RichText    `json:"rich_text"`
+	Color    string      `json:"color"`
+	Children interface{} `json:"children"`
+}
+
+type Code struct {
+	RichText RichText `json:"rich_text"`
+	Caption  RichText `json:"caption"`
+	Language string   `json:"language"`
+}
+
+type ChildPage struct {
+	Title string `json:"title"`
+}
+
+type ChildDatabase struct {
+	Title string `json:"title"`
+}
+
+type Embed struct {
+	URL string `json:"url"`
+}
+
+type Image struct {
+	FileObject
+}
+
+type Video struct {
+	FileObject
+}
+
+type File struct {
+	FileObject
+	Caption RichText `json:"caption"`
+}
+
+type PDF struct {
+	FileObject
+}
+
+type Bookmark struct {
+	URL     string   `json:"url"`
+	Caption RichText `json:"caption"`
+}
+
+type Equation struct {
+	Expression string `json:"expression"`
+}
+
+type TableOfContent struct {
+	Color string `json:"color"`
+}
+
+type Breadcrumb struct {
+}
+
+type ColumnList struct {
+	Children interface{} `json:"children"`
+}
+
+type Column struct {
+	Children interface{} `json:"children"`
+}
+
+type LinkPreview struct {
+	URL string `json:"url"`
+}
+
+type Template struct {
+	RichText RichText    `json:"rich_text"`
+	Children interface{} `json:"children"`
+}
+
+type LinkToPage struct {
+	Type       string `json:"type"`
+	PageID     string `json:"page_id"`
+	DatabaseID string `json:"databse_id"`
+}
+
+type SyncedBlock struct {
+	SyncedFrom *SyncedFrom `json:"synced_from"`
+	Children   interface{} `json:"children"`
+}
+
+type SyncedFrom struct {
+	Type    string `json:"type"`
+	BlockID string `json:"block_id"`
+}
+
+type Table struct {
+	TableWidth      int         `json:"table_width"`
+	HasColumnHeader bool        `json:"has_column_header"`
+	HasRowHeader    bool        `json:"has_row_header"`
+	Children        interface{} `json:"children"`
+}
+
+type TableRow struct {
+	Cells []RichText `json:"cells"`
+}
+
+type FileObject struct {
+	Type     string `json:"type"`
+	External string `json:"external"`
 }
 
 type User struct {
