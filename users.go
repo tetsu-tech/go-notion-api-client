@@ -64,8 +64,8 @@ func (c *Client) GetMe(ctx context.Context) (*GetMeResponse, error) {
 	}
 }
 
-func (c *Client) RetrieveUser(ctx context.Context, userId string) (res any, err error) {
-	url := path.Join("users", userId)
+func (c *Client) RetrieveUser(ctx context.Context, userID string) (res any, err error) {
+	url := path.Join("users", userID)
 	req, err := c.ConstructReq(ctx, url, http.MethodGet)
 	if err != nil {
 		return nil, err

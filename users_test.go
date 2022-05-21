@@ -45,14 +45,14 @@ func TestGetMe(t *testing.T) {
 }
 
 func TestRetrieveUser(t *testing.T) {
-	const userId = "9a26468a-dad1-498a-becb-3eb19be24f0b"
-	const resJson = `{"object":"user","id":"` + userId + `","name":"小池智哉","avatar_url":"https://s3-us-west-2.amazonaws.com/public.notion-static.com/a402c784-af23-43fb-b572-09a9d7533f59/IMG_1984_(1).jpg","type":"person","person":{"email":"tommy@p.u-tokyo.ac.jp"}}`
+	const userID = "9a26468a-dad1-498a-becb-3eb19be24f0b"
+	const resJson = `{"object":"user","id":"` + userID + `","name":"小池智哉","avatar_url":"https://s3-us-west-2.amazonaws.com/public.notion-static.com/a402c784-af23-43fb-b572-09a9d7533f59/IMG_1984_(1).jpg","type":"person","person":{"email":"tommy@p.u-tokyo.ac.jp"}}`
 	resBytes := []byte(resJson)
-	resMap := map[string]interface{}(map[string]interface{}{"avatar_url": "https://s3-us-west-2.amazonaws.com/public.notion-static.com/a402c784-af23-43fb-b572-09a9d7533f59/IMG_1984_(1).jpg", "id": userId, "name": "小池智哉", "object": "user", "person": map[string]interface{}{"email": "tommy@p.u-tokyo.ac.jp"}, "type": "person"})
+	resMap := map[string]interface{}(map[string]interface{}{"avatar_url": "https://s3-us-west-2.amazonaws.com/public.notion-static.com/a402c784-af23-43fb-b572-09a9d7533f59/IMG_1984_(1).jpg", "id": userID, "name": "小池智哉", "object": "user", "person": map[string]interface{}{"email": "tommy@p.u-tokyo.ac.jp"}, "type": "person"})
 
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
-	httpmock.RegisterResponder("GET", "https://api.notion.com/v1/users/"+userId,
+	httpmock.RegisterResponder("GET", "https://api.notion.com/v1/users/"+userID,
 		httpmock.NewBytesResponder(200, resBytes),
 	)
 
@@ -61,7 +61,7 @@ func TestRetrieveUser(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	res, err := client.RetrieveUser(context.Background(), userId)
+	res, err := client.RetrieveUser(context.Background(), userID)
 	if err != nil {
 		log.Fatal(err)
 	}
