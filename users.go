@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"path"
@@ -66,25 +65,12 @@ func (c *Client) GetMe(ctx context.Context) (*GetMeResponse, error) {
 
 func (c *Client) RetrieveUser(ctx context.Context, userID string) (res any, err error) {
 	url := path.Join("users", userID)
-	req, err := c.ConstructReq(ctx, url, http.MethodGet)
+
+	var result interface{}
+	err = c.call(ctx, url, http.MethodGet, nil, &result)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := c.HTTPClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	defer response.Body.Close()
-
-	switch response.StatusCode {
-	case http.StatusOK:
-		var r io.Reader = response.Body
-		json.NewDecoder(r).Decode(&res)
-
-		return res, nil
-	default:
-		return nil, errors.New("unexpected error")
-	}
+	return result, nil
 }
