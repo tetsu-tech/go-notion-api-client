@@ -75,13 +75,42 @@ func (c *Client) call(ctx context.Context, apiPath string, method string, postBo
 	}
 	body = bytes.NewBuffer(jsonParams)
 
-	req, err := http.NewRequest(httpMethod, reqURL.String(), nil)
+	// req, err := http.NewRequest(httpMethod, reqURL.String(), nil)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	req, err := c.newRequest(ctx, apiPath, method, contentType, body)
 	if err != nil {
-		return nil, err
+		return err
+	}
+
+	return c.do(ctx, req, res)
+}
+
+func (c *Client) do(
+	ctx context.Context,
+	req *http.Request,
+	res interface{},
+) error {
+	httpClient := http.DefaultClient
+	response, err := httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	switch response.StatusCode {
+	case http.StatusOK:
+		var r io.Reader = response.Body
+		json.NewDecoder(r).Decode(&res)
+
+		return nil
+	default:
+		return errors.New("unexpected error")
 	}
 }
 
-func (c *Client) newRaquest(ctx context.Context, apiPath string, method string, contentType string, body io.Reader) (*http.Request, error) {
+func (c *Client) newRequest(ctx context.Context, apiPath string, method string, contentType string, body io.Reader) (*http.Request, error) {
 	const (
 		baseURL    = "https://api.notion.com"
 		apiVersion = "v1"
