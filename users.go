@@ -73,7 +73,7 @@ func (c *Client) GetMe(ctx context.Context) (*User, error) {
 func (c *Client) RetrieveUser(ctx context.Context, userID string) (res *User, err error) {
 	url := path.Join("users", userID)
 
-	err = c.call(ctx, url, http.MethodGet, nil, res)
+	err = c.call(ctx, url, http.MethodGet, nil, &res)
 
 	if err != nil {
 		return nil, err
