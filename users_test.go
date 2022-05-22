@@ -81,7 +81,13 @@ func TestRetrieveUser(t *testing.T) {
 		}`, userID)
 
 		path := "https://api.notion.com/v1/users/" + userID
-		expected, err := registerMock(t, resJson, path, http.MethodGet)
+		err := registerMock(t, resJson, path, http.MethodGet)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var expected *User
+		err = json.Unmarshal([]byte(resJson), &expected)
 
 		if err != nil {
 			log.Fatal(err)
@@ -111,13 +117,22 @@ func TestRetrieveUser(t *testing.T) {
 			}
 		}`, userID)
 		path := "https://api.notion.com/v1/users/" + userID
-		expected, err := registerMock(t, resJson, path, http.MethodGet)
+		err := registerMock(t, resJson, path, http.MethodGet)
+		if err != nil {
+			log.Fatal(err)
+		}
 
+		var expected *User
+		err = json.Unmarshal([]byte(resJson), &expected)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		actual, err := requestUser(userID)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		assert.Nil(t, err)
 		assert.Equal(t, expected, actual)
 	})
