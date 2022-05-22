@@ -43,7 +43,7 @@ func TestGetMe(t *testing.T) {
 	})
 }
 
-func requestUser(userID string) (res *User, err error) {
+func requestRetrieveUser(userID string) (res *User, err error) {
 	client, err := NewClient("token", nil)
 	if err != nil {
 		log.Fatal(err)
@@ -83,7 +83,7 @@ func TestRetrieveUser(t *testing.T) {
 			log.Fatal(err)
 		}
 
-		actual, err := requestUser(userID)
+		actual, err := requestRetrieveUser(userID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -118,7 +118,7 @@ func TestRetrieveUser(t *testing.T) {
 			log.Fatal(err)
 		}
 
-		actual, err := requestUser(userID)
+		actual, err := requestRetrieveUser(userID)
 		if err != nil {
 			log.Fatal(err)
 		}
