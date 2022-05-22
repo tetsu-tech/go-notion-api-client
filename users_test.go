@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"testing"
 
@@ -55,21 +56,6 @@ func requestUser(userID string) (res *User, err error) {
 	return res, err
 }
 
-func registerMock(resJson string, userID string) (expected *User, err error) {
-	resBytes := []byte(resJson)
-
-	err = json.Unmarshal(resBytes, &expected)
-	if err != nil {
-		return nil, err
-	}
-
-	httpmock.RegisterResponder("GET", "https://api.notion.com/v1/users/"+userID,
-		httpmock.NewBytesResponder(200, resBytes),
-	)
-
-	return expected, nil
-}
-
 func TestMain(m *testing.M) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
@@ -93,7 +79,9 @@ func TestRetrieveUser(t *testing.T) {
 				"email": "user1@example.com"
 			}
 		}`, userID)
-		expected, err := registerMock(resJson, userID)
+
+		path := "https://api.notion.com/v1/users/" + userID
+		expected, err := registerMock(t, resJson, path, http.MethodGet)
 
 		if err != nil {
 			log.Fatal(err)
@@ -122,7 +110,8 @@ func TestRetrieveUser(t *testing.T) {
 				}
 			}
 		}`, userID)
-		expected, err := registerMock(resJson, userID)
+		path := "https://api.notion.com/v1/users/" + userID
+		expected, err := registerMock(t, resJson, path, http.MethodGet)
 
 		if err != nil {
 			log.Fatal(err)
