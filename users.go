@@ -2,9 +2,6 @@ package notion
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
-	"io/ioutil"
 	"net/http"
 	"path"
 )
@@ -57,35 +54,15 @@ type ListAllUsersResponse struct {
 	} `json:"user"`
 }
 
-func (c *Client) GetMe(ctx context.Context) (*User, error) {
-	req, err := c.ConstructReq(ctx, "users/me", http.MethodGet)
+func (c *Client) GetMe(ctx context.Context) (res *User, err error) {
+	url := path.Join("users", "me")
+
+	err = c.call(ctx, url, http.MethodGet, nil, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := c.HTTPClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	defer res.Body.Close()
-
-	switch res.StatusCode {
-	case http.StatusOK:
-		bodyBytes, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			return nil, err
-		}
-
-		var User *User
-		if err := json.Unmarshal(bodyBytes, &User); err != nil {
-			return nil, err
-		}
-
-		return User, nil
-	default:
-		return nil, errors.New("unexpected error")
-	}
+	return res, nil
 }
 
 func (c *Client) RetrieveUser(ctx context.Context, userID string) (res *User, err error) {
