@@ -70,11 +70,14 @@ func (c *Client) GetMe(ctx context.Context) (*User, error) {
 	}
 }
 
-func (c *Client) RetrieveUser(ctx context.Context, userID string) (res User, err error) {
+func (c *Client) RetrieveUser(ctx context.Context, userID string) (res *User, err error) {
 	url := path.Join("users", userID)
 
-	var result User
-	err = c.call(ctx, url, http.MethodGet, nil, &result)
+	err = c.call(ctx, url, http.MethodGet, nil, res)
 
-	return result, err
+	if err != nil {
+		return nil, err
+	}
+
+	return res, err
 }

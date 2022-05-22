@@ -75,11 +75,6 @@ func (c *Client) call(ctx context.Context, apiPath string, method string, postBo
 	}
 	body = bytes.NewBuffer(jsonParams)
 
-	// req, err := http.NewRequest(httpMethod, reqURL.String(), nil)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	req, err := c.newRequest(ctx, apiPath, method, contentType, body)
 	if err != nil {
 		return err
