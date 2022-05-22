@@ -202,7 +202,7 @@ func TestListAllUsers(t *testing.T) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		actual, err := client.ListAllUsers(context.Background())
+		actual, err := client.ListAllUsers(context.Background(), nil)
 		if err != nil {
 			log.Fatal(err)
 		}

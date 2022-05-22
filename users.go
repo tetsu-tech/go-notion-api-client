@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 	"path"
+
+	"github.com/google/go-querystring/query"
 )
 
 type Person struct {
@@ -36,6 +38,11 @@ type User struct {
 	Person    *Person     `json:"person"`
 }
 
+type ListAllUserOpts struct {
+	StartCursor string `json:"start_cursor"`
+	PageSize    int    `json:"page_size"`
+}
+
 type ListAllUsersResponse struct {
 	Object  string `json:"object"`
 	Results []struct {
@@ -57,7 +64,7 @@ type ListAllUsersResponse struct {
 func (c *Client) GetMe(ctx context.Context) (res *User, err error) {
 	url := path.Join("users", "me")
 
-	err = c.call(ctx, url, http.MethodGet, nil, &res)
+	err = c.call(ctx, url, http.MethodGet, nil, nil, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +75,7 @@ func (c *Client) GetMe(ctx context.Context) (res *User, err error) {
 func (c *Client) RetrieveUser(ctx context.Context, userID string) (res *User, err error) {
 	url := path.Join("users", userID)
 
-	err = c.call(ctx, url, http.MethodGet, nil, &res)
+	err = c.call(ctx, url, http.MethodGet, nil, nil, &res)
 
 	if err != nil {
 		return nil, err
@@ -77,8 +84,13 @@ func (c *Client) RetrieveUser(ctx context.Context, userID string) (res *User, er
 	return res, nil
 }
 
-func (c *Client) ListAllUsers(ctx context.Context) (res *ListAllUsersResponse, err error) {
-	err = c.call(ctx, "users", http.MethodGet, nil, &res)
+func (c *Client) ListAllUsers(ctx context.Context, opts *ListAllUserOpts) (res *ListAllUsersResponse, err error) {
+	v, err := query.Values(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	err = c.call(ctx, "users", http.MethodGet, v, nil, &res)
 	if err != nil {
 		return nil, err
 	}

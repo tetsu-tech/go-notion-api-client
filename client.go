@@ -46,22 +46,7 @@ func NewClient(token string, logger *log.Logger) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) ConstructReq(ctx context.Context, url, httpMethod string) (*http.Request, error) {
-	reqURL := *c.URL
-	reqURL.Path = path.Join(reqURL.Path, url)
-
-	req, err := http.NewRequest(httpMethod, reqURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
-	req.Header.Set("Notion-Version", "2022-02-22")
-	req = req.WithContext(ctx)
-	return req, nil
-}
-
-func (c *Client) call(ctx context.Context, apiPath string, method string, postBody interface{}, res interface{}) error {
+func (c *Client) call(ctx context.Context, apiPath string, method string, queryParams url.Values, postBody interface{}, res interface{}) error {
 	var (
 		contentType string
 		body        io.Reader
@@ -75,7 +60,7 @@ func (c *Client) call(ctx context.Context, apiPath string, method string, postBo
 	}
 	body = bytes.NewBuffer(jsonParams)
 
-	req, err := c.newRequest(ctx, apiPath, method, contentType, body)
+	req, err := c.newRequest(ctx, apiPath, method, contentType, queryParams, body)
 	if err != nil {
 		return err
 	}
@@ -105,7 +90,7 @@ func (c *Client) do(
 	}
 }
 
-func (c *Client) newRequest(ctx context.Context, apiPath string, method string, contentType string, body io.Reader) (*http.Request, error) {
+func (c *Client) newRequest(ctx context.Context, apiPath string, method string, contentType string, queryParams url.Values, body io.Reader) (*http.Request, error) {
 	const (
 		baseURL    = "https://api.notion.com"
 		apiVersion = "v1"
@@ -117,6 +102,7 @@ func (c *Client) newRequest(ctx context.Context, apiPath string, method string, 
 	}
 
 	u.Path = path.Join(u.Path, apiVersion, apiPath)
+	u.RawQuery = queryParams.Encode()
 
 	req, err := http.NewRequest(method, u.String(), body)
 	if err != nil {
