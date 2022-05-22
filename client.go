@@ -1,9 +1,12 @@
 package notion
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -55,5 +58,78 @@ func (c *Client) ConstructReq(ctx context.Context, url, httpMethod string) (*htt
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
 	req.Header.Set("Notion-Version", "2022-02-22")
 	req = req.WithContext(ctx)
+	return req, nil
+}
+
+func (c *Client) call(ctx context.Context, apiPath string, method string, postBody interface{}, res interface{}) error {
+	var (
+		contentType string
+		body        io.Reader
+	)
+
+	contentType = "application/json"
+	jsonParams, err := json.Marshal(postBody)
+
+	if err != nil {
+		return err
+	}
+	body = bytes.NewBuffer(jsonParams)
+
+	req, err := c.newRequest(ctx, apiPath, method, contentType, body)
+	if err != nil {
+		return err
+	}
+
+	return c.do(ctx, req, res)
+}
+
+func (c *Client) do(
+	ctx context.Context,
+	req *http.Request,
+	res interface{},
+) error {
+	httpClient := http.DefaultClient
+	response, err := httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	switch response.StatusCode {
+	case http.StatusOK:
+		var r io.Reader = response.Body
+		json.NewDecoder(r).Decode(&res)
+
+		return nil
+	default:
+		return errors.New("unexpected error")
+	}
+}
+
+func (c *Client) newRequest(ctx context.Context, apiPath string, method string, contentType string, body io.Reader) (*http.Request, error) {
+	const (
+		baseURL    = "https://api.notion.com"
+		apiVersion = "v1"
+	)
+	u, err := url.Parse(baseURL)
+
+	if err != nil {
+		return nil, err
+	}
+
+	u.Path = path.Join(u.Path, apiVersion, apiPath)
+
+	req, err := http.NewRequest(method, u.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	req.Header.Set("Notion-Version", "2022-02-22")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
+
+	if contentType != "" {
+		req.Header.Set("Content-Type", contentType)
+	}
 	return req, nil
 }
