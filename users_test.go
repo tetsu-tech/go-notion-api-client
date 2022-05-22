@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"testing"
 
 	"github.com/jarcoal/httpmock"
@@ -54,15 +53,6 @@ func requestUser(userID string) (res *User, err error) {
 		log.Fatal(err)
 	}
 	return res, err
-}
-
-func TestMain(m *testing.M) {
-	httpmock.Activate()
-	defer httpmock.DeactivateAndReset()
-
-	status := m.Run()
-
-	os.Exit(status)
 }
 
 func TestRetrieveUser(t *testing.T) {
