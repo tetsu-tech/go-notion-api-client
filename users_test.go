@@ -52,7 +52,7 @@ func requestRetrieveUser(userID string) (res *User, err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return res, err
+	return res, nil
 }
 
 func TestRetrieveUser(t *testing.T) {
@@ -119,6 +119,78 @@ func TestRetrieveUser(t *testing.T) {
 		}
 
 		actual, err := requestRetrieveUser(userID)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		assert.Nil(t, err)
+		assert.Equal(t, expected, actual)
+	})
+}
+
+func TestListAllUsers(t *testing.T) {
+	t.Run("Endpoint: List all users", func(t *testing.T) {
+		var resJson = `{
+			"object": "list",
+			"results": [
+				{
+					"object": "user",
+					"id": "user1-id",
+					"name": "user1-name",
+					"avatar_url": "user1-avatar-url",
+					"type": "person",
+					"person": {
+						"email": "user1-email"
+					}
+				},
+				{
+					"object": "user",
+					"id": "user2-id",
+					"name": "user2-name",
+					"avatar_url": "user2-avatar-url",
+					"type": "person",
+					"person": {
+						"email": "user2-email"
+					}
+				},
+				{
+					"object": "user",
+					"id": "bot1-id",
+					"name": "bot1-name",
+					"avatar_url": null,
+					"type": "bot",
+					"bot": {
+						"owner": {
+							"type": "workspace",
+							"workspace": true
+						}
+					}
+				}
+			],
+			"next_cursor": null,
+			"has_more": false,
+			"type": "user",
+			"user": {}
+		}`
+
+		path := "https://api.notion.com/v1/users"
+		err := registerMock(t, resJson, path, http.MethodGet)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var expected *ListAllUsersResponse
+		err = json.Unmarshal([]byte(resJson), &expected)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		client, err := NewClient("token", nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+		actual, err := client.ListAllUsers(context.Background())
 		if err != nil {
 			log.Fatal(err)
 		}

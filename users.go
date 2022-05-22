@@ -39,6 +39,24 @@ type User struct {
 	Person    *Person     `json:"person"`
 }
 
+type ListAllUsersResponse struct {
+	Object  string `json:"object"`
+	Results []struct {
+		Object    string  `json:"object"`
+		ID        string  `json:"id"`
+		Name      string  `json:"name"`
+		AvatarURL string  `json:"avatar_url"`
+		Type      string  `json:"type"`
+		Person    *Person `json:"person,omitempty"`
+		Bot       *Bot    `json:"bot,omitempty"`
+	} `json:"results"`
+	NextCursor interface{} `json:"next_cursor"`
+	HasMore    bool        `json:"has_more"`
+	Type       string      `json:"type"`
+	User       struct {
+	} `json:"user"`
+}
+
 func (c *Client) GetMe(ctx context.Context) (*User, error) {
 	req, err := c.ConstructReq(ctx, "users/me", http.MethodGet)
 	if err != nil {
@@ -79,5 +97,14 @@ func (c *Client) RetrieveUser(ctx context.Context, userID string) (res *User, er
 		return nil, err
 	}
 
-	return res, err
+	return res, nil
+}
+
+func (c *Client) ListAllUsers(ctx context.Context) (res *ListAllUsersResponse, err error) {
+	err = c.call(ctx, "users", http.MethodGet, nil, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
