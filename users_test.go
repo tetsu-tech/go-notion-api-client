@@ -77,15 +77,15 @@ func TestRetrieveUser(t *testing.T) {
 
 	var userID string
 	t.Run("Endpoint: Retrieve a user with person type", func(t *testing.T) {
-		userID = "9a26468a-dad1-498a-becb-3eb19be24f0b"
+		userID = "user1"
 		var resJson = fmt.Sprintf(`{
 			"object": "user",
 			"id": "%s",
-			"name": "小池智哉",
-			"avatar_url": "https://s3-us-west-2.amazonaws.com/public.notion-static.com/a402c784-af23-43fb-b572-09a9d7533f59/IMG_1984_(1).jpg",
+			"name": "user1",
+			"avatar_url": "user1_avatar",
 			"type": "person",
 			"person": {
-				"email": "tommy@p.u-tokyo.ac.jp"
+				"email": "user1@example.com"
 			}
 		}`, userID)
 		expected, err := registerMock(resJson, userID)
@@ -103,11 +103,11 @@ func TestRetrieveUser(t *testing.T) {
 	})
 
 	t.Run("Endpoint: Retrieve a user with bot type", func(t *testing.T) {
-		userID = "721363f4-bc34-4700-85de-c4cca6c423ad"
+		userID = "bot_user"
 		resJson := fmt.Sprintf(`{
 			"object": "user",
 			"id": "%s",
-			"name": "go-notion-api-client",
+			"name": "bot user",
 			"avatar_url": null,
 			"type": "bot",
 			"bot": {
