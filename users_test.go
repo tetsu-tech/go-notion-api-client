@@ -68,6 +68,10 @@ func registerMock(resJson string, userID string) (expected *User, err error) {
 		httpmock.NewBytesResponder(200, resBytes),
 	)
 
+	httpmock.RegisterResponder("GET", "https://api.notion.com/v1/users/"+userID,
+		httpmock.NewBytesResponder(200, []byte("aaa")),
+	)
+
 	return expected, nil
 }
 
