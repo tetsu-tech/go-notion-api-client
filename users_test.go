@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"testing"
 
 	"github.com/jarcoal/httpmock"
@@ -22,8 +23,6 @@ func TestGetMe(t *testing.T) {
 		return
 	}
 
-	httpmock.Activate()
-	defer httpmock.DeactivateAndReset()
 	httpmock.RegisterResponder("GET", "https://api.notion.com/v1/users/me",
 		httpmock.NewBytesResponder(200, resBytes),
 	)
@@ -68,17 +67,19 @@ func registerMock(resJson string, userID string) (expected *User, err error) {
 		httpmock.NewBytesResponder(200, resBytes),
 	)
 
-	httpmock.RegisterResponder("GET", "https://api.notion.com/v1/users/"+userID,
-		httpmock.NewBytesResponder(200, []byte("aaa")),
-	)
-
 	return expected, nil
 }
 
-func TestRetrieveUser(t *testing.T) {
+func TestMain(m *testing.M) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 
+	status := m.Run()
+
+	os.Exit(status)
+}
+
+func TestRetrieveUser(t *testing.T) {
 	var userID string
 	t.Run("Endpoint: Retrieve a user with person type", func(t *testing.T) {
 		userID = "user1"
