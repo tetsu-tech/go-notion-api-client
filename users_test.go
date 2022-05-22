@@ -44,30 +44,39 @@ func TestGetMe(t *testing.T) {
 	})
 }
 
-func RetrieveUserTestFunc(resJson string, userID string) (expected User, res *User, err error) {
+func requestUser(userID string) (res *User, err error) {
+	client, err := NewClient("token", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	res, err = client.RetrieveUser(context.Background(), userID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return res, err
+}
+
+func registerMock(resJson string, userID string) (expected *User, err error) {
 	resBytes := []byte(resJson)
 
 	err = json.Unmarshal(resBytes, &expected)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return nil, err
 	}
 
-	httpmock.Activate()
-	defer httpmock.DeactivateAndReset()
 	httpmock.RegisterResponder("GET", "https://api.notion.com/v1/users/"+userID,
 		httpmock.NewBytesResponder(200, resBytes),
 	)
 
-	client, err := NewClient("token", nil)
-	res, err = client.RetrieveUser(context.Background(), userID)
-	return expected, res, err
+	return expected, nil
 }
 
 func TestRetrieveUser(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
 	var userID string
 	t.Run("Endpoint: Retrieve a user with person type", func(t *testing.T) {
-		var expected User
 		userID = "9a26468a-dad1-498a-becb-3eb19be24f0b"
 		var resJson = fmt.Sprintf(`{
 			"object": "user",
@@ -79,35 +88,43 @@ func TestRetrieveUser(t *testing.T) {
 				"email": "tommy@p.u-tokyo.ac.jp"
 			}
 		}`, userID)
-		expected, actual, err := RetrieveUserTestFunc(resJson, userID)
+		expected, err := registerMock(resJson, userID)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		actual, err := requestUser(userID)
 		if err != nil {
 			log.Fatal(err)
 		}
 		assert.Nil(t, err)
-		assert.Equal(t, &expected, actual)
+		assert.Equal(t, expected, actual)
 	})
 
-	// t.Run("Endpoint: Retrieve a user with bot type", func(t *testing.T) {
-	// 	var expected User
-	// 	userID = "721363f4-bc34-4700-85de-c4cca6c423ad"
-	// 	resJson := fmt.Sprintf(`{
-	// 		"object": "user",
-	// 		"id": "%s",
-	// 		"name": "go-notion-api-client",
-	// 		"avatar_url": null,
-	// 		"type": "bot",
-	// 		"bot": {
-	// 			"owner": {
-	// 				"type": "workspace",
-	// 				"workspace": true
-	// 			}
-	// 		}
-	// 	}`, userID)
-	// 	expected, actual, err := RetrieveUserTestFunc(resJson, userID)
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	assert.Nil(t, err)
-	// 	assert.Equal(t, expected, actual)
-	// })
+	t.Run("Endpoint: Retrieve a user with bot type", func(t *testing.T) {
+		userID = "721363f4-bc34-4700-85de-c4cca6c423ad"
+		resJson := fmt.Sprintf(`{
+			"object": "user",
+			"id": "%s",
+			"name": "go-notion-api-client",
+			"avatar_url": null,
+			"type": "bot",
+			"bot": {
+				"owner": {
+					"type": "workspace",
+					"workspace": true
+				}
+			}
+		}`, userID)
+		expected, err := registerMock(resJson, userID)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		actual, err := requestUser(userID)
+		assert.Nil(t, err)
+		assert.Equal(t, expected, actual)
+	})
 }
