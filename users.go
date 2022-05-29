@@ -1,56 +1,52 @@
-package main
+package notion
 
 import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"path"
 )
 
-type GetMeResponse struct {
+type Person struct {
+	Email string `json:"email"`
+}
+
+type Bot struct {
+	Owner struct {
+		Type string `json:"type"`
+		User struct {
+			Object    string      `json:"object"`
+			ID        string      `json:"id"`
+			Name      string      `json:"name"`
+			AvatarURL interface{} `json:"avatar_url"`
+			Type      string      `json:"type"`
+			Person    struct {
+				Email string `json:"email"`
+			} `json:"person"`
+		} `json:"user"`
+	} `json:"owner"`
+}
+
+type User struct {
 	Object    string      `json:"object"`
 	ID        string      `json:"id"`
 	Name      string      `json:"name"`
 	AvatarURL interface{} `json:"avatar_url"`
 	Type      string      `json:"type"`
-	Bot       struct {
-		Owner struct {
-			Type string `json:"type"`
-			User struct {
-				Object    string      `json:"object"`
-				ID        string      `json:"id"`
-				Name      string      `json:"name"`
-				AvatarURL interface{} `json:"avatar_url"`
-				Type      string      `json:"type"`
-				Person    struct {
-					Email string `json:"email"`
-				} `json:"person"`
-			} `json:"user"`
-		} `json:"owner"`
-	} `json:"bot"`
+	Bot       *Bot        `json:"bot"`
+	Person    *Person     `json:"person"`
 }
 
-func (c *Client) GetMe(ctx context.Context) (*GetMeResponse, error) {
-	reqURL := *c.URL
-
-	reqURL.Path = path.Join(reqURL.Path, "users", "me")
-
-	req, err := http.NewRequest(http.MethodGet, reqURL.String(), nil)
-
+func (c *Client) GetMe(ctx context.Context) (*User, error) {
+	req, err := c.ConstructReq(ctx, "users/me", http.MethodGet)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
-	req.Header.Set("Notion-Version", "2021-08-16")
-	req = req.WithContext(ctx)
-
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
-
 		return nil, err
 	}
 
@@ -63,13 +59,25 @@ func (c *Client) GetMe(ctx context.Context) (*GetMeResponse, error) {
 			return nil, err
 		}
 
-		var getMeResponse *GetMeResponse
-		if err := json.Unmarshal(bodyBytes, &getMeResponse); err != nil {
+		var User *User
+		if err := json.Unmarshal(bodyBytes, &User); err != nil {
 			return nil, err
 		}
 
-		return getMeResponse, nil
+		return User, nil
 	default:
 		return nil, errors.New("unexpected error")
 	}
+}
+
+func (c *Client) RetrieveUser(ctx context.Context, userID string) (res *User, err error) {
+	url := path.Join("users", userID)
+
+	err = c.call(ctx, url, http.MethodGet, nil, &res)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, err
 }
