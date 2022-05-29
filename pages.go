@@ -69,42 +69,4 @@ func (c *Client) GetRetrievePage(ctx context.Context, pageId string) (res *GetRe
 	}
 
 	return res, err
-	// reqUrl := *c.URL
-
-	// reqUrl.Path = path.Join(reqUrl.Path, "pages", pageId)
-
-	// req, err := http.NewRequest(http.MethodGet, reqUrl.String(), nil)
-
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
-	// req.Header.Set("Notion-Version", "2022-02-22")
-
-	// req = req.WithContext(ctx)
-
-	// res, err := c.HTTPClient.Do(req)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// defer res.Body.Close()
-
-	// switch res.StatusCode {
-	// case http.StatusOK:
-	// 	bodyBytes, err := ioutil.ReadAll(res.Body)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-
-	// 	var getRetrievePage *GetRetrievePageResponse
-	// 	if err := json.Unmarshal(bodyBytes, &getRetrievePage); err != nil {
-	// 		return nil, err
-	// 	}
-
-	// 	return getRetrievePage, nil
-	// default:
-	// 	return nil, errors.New("unexpected error")
-	// }
 }
