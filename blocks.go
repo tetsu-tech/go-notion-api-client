@@ -12,16 +12,16 @@ import (
 )
 
 type Block struct {
-	Object         string `json:"object"`
-	ID             string `json:"id"`
-	CreatedTime    string `json:"created_time"`
-	CreatedBy      User   `json:"created_by"`
-	LastEditedTime string `json:"last_edited_time"`
-	LastEditedBy   User   `json:"last_edited_by"`
-	HasChildren    bool   `json:"has_children"`
-	Type           string `json:"type"`
-	Archived       bool   `json:"archived"`
-	ToDo           ToDo   `json:"to_do"`
+	Object         string      `json:"object"`
+	ID             string      `json:"id"`
+	CreatedTime    string      `json:"created_time"`
+	CreatedBy      RelatedUser `json:"created_by"`
+	LastEditedTime string      `json:"last_edited_time"`
+	LastEditedBy   RelatedUser `json:"last_edited_by"`
+	HasChildren    bool        `json:"has_children"`
+	Type           string      `json:"type"`
+	Archived       bool        `json:"archived"`
+	ToDo           ToDo        `json:"to_do"`
 }
 
 // block type: https://developers.notion.com/reference/block
@@ -186,7 +186,7 @@ type FileObject struct {
 	External string `json:"external"`
 }
 
-type User struct {
+type RelatedUser struct {
 	Object string `json:"object"`
 	ID     string `json:"id"`
 }

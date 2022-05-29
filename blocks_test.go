@@ -2,12 +2,25 @@ package notion
 
 import (
 	"context"
+	"encoding/json"
 	"log"
+	"net/http"
 	"testing"
 
-	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 )
+
+func requestRetrieveBlock(blockID string) (res *Block, err error) {
+	client, err := NewClient("token", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	res, err = client.RetrieveBlock(context.Background(), blockID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return res, nil
+}
 
 func TestRetrieveBlock(t *testing.T) {
 	const blockID = "1a1b50f1-2a36-446c-b6d4-88049f05e096"
@@ -51,44 +64,25 @@ func TestRetrieveBlock(t *testing.T) {
 		}
 	}
 	`
-
-	expectedBytes := []byte(expectedJson)
-	expected := Block{
-		Object:      "block",
-		ID:          "1a1b50f1-2a36-446c-b6d4-88049f05e096",
-		CreatedTime: "2022-03-20T12:20:00.000Z",
-		CreatedBy: User{
-			Object: "user",
-			ID:     "test_user",
-		},
-		LastEditedTime: "2022-03-20T12:20:00.000Z",
-		LastEditedBy: User{
-			Object: "user",
-			ID:     "test_user",
-		},
-		HasChildren: false,
-		Type:        "paragraph",
-	}
-
-	httpmock.Activate()
-	defer httpmock.DeactivateAndReset()
-
-	httpmock.RegisterResponder("GET", "https://api.notion.com/v1/bocks"+blockID, httpmock.NewBytesResponder(200, expectedBytes))
-
-	client, err := NewClient("token", nil)
+	path := "https://api.notion.com/v1/blocks/" + blockID
+	err := registerMock(t, expectedJson, path, http.MethodGet)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	res, err := client.RetrieveBlock(context.Background(), blockID)
+	var expected *Block
+	err = json.Unmarshal([]byte(expectedJson), &expected)
+
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	actual, err := requestRetrieveBlock(blockID)
 
 	t.Run("Retrieve a block endpoint", func(t *testing.T) {
 		assert.Nil(t, err)
-		assert.Equal(t, resM)
+		assert.Equal(t, expected, actual)
 	})
 
 }
