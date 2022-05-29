@@ -2,10 +2,6 @@ package notion
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"io/ioutil"
 	"net/http"
 	"path"
 	"time"
@@ -63,43 +59,52 @@ type GetRetrievePageResponse struct {
 	URL string `json:"url"`
 }
 
-func (c *Client) GetRetrievePage(ctx context.Context, pageId string) (*GetRetrievePageResponse, error) {
-	reqUrl := *c.URL
+func (c *Client) GetRetrievePage(ctx context.Context, pageId string) (res *GetRetrievePageResponse, err error) {
+	url := path.Join("pages", pageId)
 
-	reqUrl.Path = path.Join(reqUrl.Path, "pages", pageId)
-
-	req, err := http.NewRequest(http.MethodGet, reqUrl.String(), nil)
+	err = c.call(ctx, url, http.MethodGet, nil, &res)
 
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
-	req.Header.Set("Notion-Version", "2022-02-22")
+	return res, err
+	// reqUrl := *c.URL
 
-	req = req.WithContext(ctx)
+	// reqUrl.Path = path.Join(reqUrl.Path, "pages", pageId)
 
-	res, err := c.HTTPClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
+	// req, err := http.NewRequest(http.MethodGet, reqUrl.String(), nil)
 
-	defer res.Body.Close()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	switch res.StatusCode {
-	case http.StatusOK:
-		bodyBytes, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			return nil, err
-		}
+	// req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
+	// req.Header.Set("Notion-Version", "2022-02-22")
 
-		var getRetrievePage *GetRetrievePageResponse
-		if err := json.Unmarshal(bodyBytes, &getRetrievePage); err != nil {
-			return nil, err
-		}
+	// req = req.WithContext(ctx)
 
-		return getRetrievePage, nil
-	default:
-		return nil, errors.New("unexpected error")
-	}
+	// res, err := c.HTTPClient.Do(req)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// defer res.Body.Close()
+
+	// switch res.StatusCode {
+	// case http.StatusOK:
+	// 	bodyBytes, err := ioutil.ReadAll(res.Body)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+
+	// 	var getRetrievePage *GetRetrievePageResponse
+	// 	if err := json.Unmarshal(bodyBytes, &getRetrievePage); err != nil {
+	// 		return nil, err
+	// 	}
+
+	// 	return getRetrievePage, nil
+	// default:
+	// 	return nil, errors.New("unexpected error")
+	// }
 }
