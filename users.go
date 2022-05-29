@@ -39,11 +39,7 @@ type User struct {
 	Person    *Person     `json:"person"`
 }
 
-<<<<<<< HEAD
-func (c *Client) GetMe(ctx context.Context) (*GetMeResponse, error) {
-=======
 func (c *Client) GetMe(ctx context.Context) (*User, error) {
->>>>>>> 141b935f9aaf119d74c645a7def0034e97bdf6a7
 	req, err := c.ConstructReq(ctx, "users/me", http.MethodGet)
 	if err != nil {
 		return nil, err
@@ -74,19 +70,10 @@ func (c *Client) GetMe(ctx context.Context) (*User, error) {
 	}
 }
 
-<<<<<<< HEAD
-func (c *Client) RetrieveUser(ctx context.Context, userId string) (res any, err error) {
-	url := path.Join("users", userId)
-	req, err := c.ConstructReq(ctx, url, http.MethodGet)
-	if err != nil {
-		return nil, err
-	}
-=======
 func (c *Client) RetrieveUser(ctx context.Context, userID string) (res *User, err error) {
 	url := path.Join("users", userID)
 
 	err = c.call(ctx, url, http.MethodGet, nil, &res)
->>>>>>> 141b935f9aaf119d74c645a7def0034e97bdf6a7
 
 	if err != nil {
 		return nil, err

@@ -17,14 +17,14 @@ func TestGetMe(t *testing.T) {
 	resBytes := []byte(resJson)
 	var actual *User
 
-	err := json.Unmarshal(expectedBytes, &actual)
+	err := json.Unmarshal(resBytes, &actual)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	httpmock.RegisterResponder("GET", "https://api.notion.com/v1/users/me",
-		httpmock.NewBytesResponder(200, expectedBytes),
+		httpmock.NewBytesResponder(200, resBytes),
 	)
 
 	client, err := NewClient("token", nil)
