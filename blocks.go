@@ -12,16 +12,46 @@ import (
 )
 
 type Block struct {
-	Object         string      `json:"object"`
-	ID             string      `json:"id"`
-	CreatedTime    string      `json:"created_time"`
-	CreatedBy      RelatedUser `json:"created_by"`
-	LastEditedTime string      `json:"last_edited_time"`
-	LastEditedBy   RelatedUser `json:"last_edited_by"`
-	HasChildren    bool        `json:"has_children"`
-	Type           string      `json:"type"`
-	Archived       bool        `json:"archived"`
-	ToDo           ToDo        `json:"to_do"`
+	Object           string            `json:"object"`
+	ID               string            `json:"id"`
+	CreatedTime      string            `json:"created_time"`
+	CreatedBy        RelatedUser       `json:"created_by"`
+	LastEditedTime   string            `json:"last_edited_time"`
+	LastEditedBy     RelatedUser       `json:"last_edited_by"`
+	HasChildren      bool              `json:"has_children"`
+	Type             string            `json:"type"`
+	Archived         bool              `json:"archived"`
+	Paragraph        *Paragraph        `json:"paragraph,omitempty"`
+	HeadingOne       *HeadingOne       `json:"heading_one,omitempty"`
+	HeadingTwo       *HeadingTwo       `json:"heading_two,omitempty"`
+	HeadingThree     *HeadingThree     `json:"heading_three,omitempty"`
+	Callout          *Callout          `json:"callout,omitempty"`
+	Quote            *Quote            `json:"quoto,omitempty"`
+	NumberedListItem *NumberedListItem `json:"numbered_list_item,omitempty"`
+	BulletedListItem *BulletedListItem `json:"bulleted_list_item,omitempty"`
+	ToDo             *ToDo             `json:"to_do,omitempty"`
+	Toggle           *Toggle           `json:"toggle,omitempty"`
+	Code             *Code             `json:"code,omitempty"`
+	ChildPage        *ChildPage        `json:"child_page,omitempty"`
+	ChildDatabase    *ChildDatabase    `json:"child_database,omitempty"`
+	Embed            *Embed            `json:"embed,omitempty"`
+	Image            *Image            `json:"image,omitempty"`
+	Video            *Video            `json:"video,omitempty"`
+	File             *File             `json:"file,omitempty"`
+	PDF              *PDF              `json:"pdf,omitempty"`
+	Bookmark         *Bookmark         `json:"bookmark,omitempty"`
+	Equation         *Equation         `json:"equation,omitempty"`
+	TableOfContent   *TableOfContent   `json:"table_of_content,omitempty"`
+	Breadcrumb       *Breadcrumb       `json:"breadcrumb,omitempty"`
+	ColumnList       *ColumnList       `json:"column_list,omitempty"`
+	Column           *Column           `json:"column,omitempty"`
+	LinkPreview      *LinkPreview      `json:"linked_preview,omitempty"`
+	Template         *Template         `json:"template,omitempty"`
+	LinkToPage       *LinkToPage       `json:"link_to_page,omitempty"`
+	SyncedBlock      *SyncedBlock      `json:"synced_block,omitempty"`
+	SyncedForm       *SyncedForm       `json:"synced_form,omitempty"`
+	Table            *Table            `json:"table,omitempty"`
+	TableRow         *TableRow         `json:"table_row,omitempty"`
 }
 
 // block type: https://developers.notion.com/reference/block
@@ -161,11 +191,11 @@ type LinkToPage struct {
 }
 
 type SyncedBlock struct {
-	SyncedFrom *SyncedFrom `json:"synced_from"`
+	SyncedFrom *SyncedForm `json:"synced_from"`
 	Children   interface{} `json:"children"`
 }
 
-type SyncedFrom struct {
+type SyncedForm struct {
 	Type    string `json:"type"`
 	BlockID string `json:"block_id"`
 }
