@@ -40,7 +40,7 @@ func TestGetMe(t *testing.T) {
 	}
 
 	var expected *User
-	err = json.Unmarshal([]byte(string(resJson)), &expected)
+	err = json.Unmarshal([]byte(resJson), &expected)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -72,19 +72,14 @@ func TestRetrieveUser(t *testing.T) {
 	var userID string
 	t.Run("Endpoint: Retrieve a user with person type", func(t *testing.T) {
 		userID = "user1"
-		var resJson = fmt.Sprintf(`{
-			"object": "user",
-			"id": "%s",
-			"name": "user1",
-			"avatar_url": "user1_avatar",
-			"type": "person",
-			"person": {
-				"email": "user1@example.com"
-			}
-		}`, userID)
-
 		path := "https://api.notion.com/v1/users/" + userID
-		err := registerMock(t, resJson, path, http.MethodGet)
+
+		resJson, err := os.ReadFile("./testdata/users/retrieveUser/user.json")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = registerMock(t, string(resJson), path, http.MethodGet)
 		if err != nil {
 			log.Fatal(err)
 		}
