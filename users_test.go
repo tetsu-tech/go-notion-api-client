@@ -3,7 +3,6 @@ package notion
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -101,21 +100,10 @@ func TestRetrieveUser(t *testing.T) {
 
 	t.Run("Endpoint: Retrieve a user with bot type", func(t *testing.T) {
 		userID = "bot_user"
-		resJson := fmt.Sprintf(`{
-			"object": "user",
-			"id": "%s",
-			"name": "bot user",
-			"avatar_url": null,
-			"type": "bot",
-			"bot": {
-				"owner": {
-					"type": "workspace",
-					"workspace": true
-				}
-			}
-		}`, userID)
 		path := "https://api.notion.com/v1/users/" + userID
-		err := registerMock(t, resJson, path, http.MethodGet)
+
+		resJson, err := os.ReadFile("./testdata/users/retrieveUser/bot.json")
+		err = registerMock(t, string(resJson), path, http.MethodGet)
 		if err != nil {
 			log.Fatal(err)
 		}
